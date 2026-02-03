@@ -1,0 +1,15 @@
+<%- include('../partials/head') %>
+<body>
+  <%- include('../partials/nav') %>
+  <main class="auth-page">
+    <h1>Log in</h1>
+    <% if (error) { %><p class="error"><%= error %></p><% } %>
+    <form method="post" action="/login" class="card form">
+      <label>Email <input type="email" name="email" required></label>
+      <label>Password <input type="password" name="password" required></label>
+      <button type="submit" class="btn">Log in</button>
+    </form>
+    <p><a href="/register">Create an account</a></p>
+  </main>
+</body>
+</html>
