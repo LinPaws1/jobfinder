@@ -1,0 +1,21 @@
+<%- include('../partials/head') %>
+<body>
+  <%- include('../partials/nav') %>
+  <main class="auth-page">
+    <h1>Register</h1>
+    <% if (error) { %><p class="error"><%= error %></p><% } %>
+    <form method="post" action="/register" class="card form">
+      <label>Email <input type="email" name="email" required></label>
+      <label>Password <input type="password" name="password" minlength="6" required></label>
+      <label>Account type
+        <select name="role" required>
+          <option value="jobseeker">Job Seeker</option>
+          <option value="employer">Employer</option>
+        </select>
+      </label>
+      <button type="submit" class="btn">Register</button>
+    </form>
+    <p><a href="/login">Already have an account? Log in</a></p>
+  </main>
+</body>
+</html>

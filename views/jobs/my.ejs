@@ -1,0 +1,23 @@
+<%- include('../partials/head', { title: 'My Jobs' }) %>
+<body>
+  <%- include('../partials/nav') %>
+  <main class="container">
+    <h1>My Jobs</h1>
+    <p><a href="/jobs/new" class="btn">Post a new job</a></p>
+    <section class="job-list">
+      <% jobs.forEach(function(job) { %>
+        <article class="card job-card">
+          <h2><%= job.title %></h2>
+          <p class="meta"><%= job.location || '—' %></p>
+          <p><%= job.description.substring(0, 120) %><%= job.description.length > 120 ? '…' : '' %></p>
+          <a href="/jobs/<%= job._id %>/edit" class="btn btn-sm">Edit</a>
+          <form action="/jobs/<%= job._id %>?_method=DELETE" method="post" style="display:inline">
+            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+          </form>
+        </article>
+      <% }); %>
+    </section>
+    <% if (!jobs.length) { %><p>You haven't posted any jobs yet. <a href="/jobs/new">Post your first job</a>.</p><% } %>
+  </main>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<%- include('../partials/head', { title: 'Edit Profile' }) %>
+<body>
+  <%- include('../partials/nav') %>
+  <main class="container">
+    <h1>Edit profile</h1>
+    <form method="post" action="/profiles/edit?_method=PUT" class="card form">
+      <% if (profile.role === 'jobseeker') { %>
+        <label>Full name <input type="text" name="fullName" value="<%= profile.fullName || '' %>"></label>
+        <label>Location <input type="text" name="location" value="<%= profile.location || '' %>"></label>
+        <label>Skills <input type="text" name="skills" value="<%= profile.skills || '' %>" placeholder="e.g. JavaScript, React"></label>
+        <label>Experience <textarea name="experience" rows="4"><%= profile.experience || '' %></textarea></label>
+      <% } else { %>
+        <label>Company name <input type="text" name="companyName" value="<%= profile.companyName || '' %>"></label>
+        <label>Company description <textarea name="companyDescription" rows="4"><%= profile.companyDescription || '' %></textarea></label>
+      <% } %>
+      <button type="submit" class="btn">Save profile</button>
+    </form>
+  </main>
+</body>
+</html>
