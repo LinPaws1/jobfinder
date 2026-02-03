@@ -1,0 +1,24 @@
+<%- include('../partials/head', { title: job.title }) %>
+<body>
+  <%- include('../partials/nav') %>
+  <main class="container">
+    <article class="card job-detail">
+      <h1><%= job.title %></h1>
+      <p class="meta"><%= job.location || '—' %> · <%= job.jobType %></p>
+      <% if (job.employer) { %>
+        <p><strong>Company:</strong> <%= job.employer.companyName || job.employer.email %></p>
+        <% if (job.employer.companyDescription) { %><p><%= job.employer.companyDescription %></p><% } %>
+      <% } %>
+      <h2>Description</h2>
+      <p><%= job.description %></p>
+      <% if (job.requirements) { %>
+        <h2>Requirements</h2>
+        <p><%= job.requirements %></p>
+      <% } %>
+      <% if (user && user.role === 'jobseeker') { %>
+        <a href="/interviews/request/<%= job._id %>" class="btn">Request interview</a>
+      <% } %>
+    </article>
+  </main>
+</body>
+</html>

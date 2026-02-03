@@ -1,0 +1,24 @@
+<%- include('../partials/head', { title: 'Browse Jobs' }) %>
+<body>
+  <%- include('../partials/nav') %>
+  <main class="container">
+    <h1>Browse Jobs</h1>
+    <form method="get" class="search-form">
+      <input type="text" name="q" placeholder="Search by title or description" value="<%= q %>">
+      <input type="text" name="location" placeholder="Location" value="<%= location %>">
+      <button type="submit" class="btn">Search</button>
+    </form>
+    <section class="job-list">
+      <% jobs.forEach(function(job) { %>
+        <article class="card job-card">
+          <h2><a href="/jobs/<%= job._id %>"><%= job.title %></a></h2>
+          <p class="meta"><%= job.employer ? (job.employer.companyName || job.employer.email) : '—' %> · <%= job.location || '—' %></p>
+          <p><%= job.description.substring(0, 150) %><%= job.description.length > 150 ? '…' : '' %></p>
+          <a href="/jobs/<%= job._id %>" class="btn btn-sm">View &amp; request interview</a>
+        </article>
+      <% }); %>
+    </section>
+    <% if (!jobs.length) { %><p>No jobs found.</p><% } %>
+  </main>
+</body>
+</html>
