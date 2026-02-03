@@ -1,0 +1,15 @@
+<%- include('../partials/head', { title: 'Request Interview' }) %>
+<body>
+  <%- include('../partials/nav') %>
+  <main class="container">
+    <h1>Request interview: <%= job.title %></h1>
+    <p><strong>Company:</strong> <%= job.employer && (job.employer.companyName || job.employer.email) %></p>
+    <form method="post" action="/interviews/request/<%= job._id %>" class="card form">
+      <label>Preferred date <input type="date" name="preferredDate"></label>
+      <label>Preferred time <input type="text" name="preferredTime" placeholder="e.g. 2:00 PM"></label>
+      <label>Message <textarea name="message" rows="3" placeholder="Brief intro or availability"></textarea></label>
+      <button type="submit" class="btn">Send request</button>
+    </form>
+  </main>
+</body>
+</html>
