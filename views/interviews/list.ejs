@@ -1,0 +1,44 @@
+<%- include('../partials/head', { title: 'My Interviews' }) %>
+<body>
+  <%- include('../partials/nav') %>
+  <main class="container">
+    <h1>My interviews</h1>
+    <section class="interview-list">
+      <% interviews.forEach(function(i) { %>
+        <article class="card interview-card">
+          <h2><%= i.job && i.job.title ? i.job.title : 'Job' %></h2>
+          <% if (user.role === 'jobseeker') { %>
+            <p><strong>Employer:</strong> <%= i.employer && (i.employer.companyName || i.employer.email) %></p>
+          <% } else { %>
+            <p><strong>Candidate:</strong> <%= i.jobSeeker && (i.jobSeeker.fullName || i.jobSeeker.email) %></p>
+          <% } %>
+          <p><strong>Status:</strong> <span class="status status-<%= i.status %>"><%= i.status %></span></p>
+          <% if (i.preferredDate || i.preferredTime) { %>
+            <p>Preferred: <%= i.preferredDate ? new Date(i.preferredDate).toLocaleDateString() : '' %> <%= i.preferredTime || '' %></p>
+          <% } %>
+          <% if (i.confirmedDate || i.confirmedTime) { %>
+            <p>Confirmed: <%= i.confirmedDate ? new Date(i.confirmedDate).toLocaleDateString() : '' %> <%= i.confirmedTime || '' %></p>
+          <% } %>
+          <% if (i.message) { %><p><%= i.message %></p><% } %>
+          <% if (user.role === 'employer' && i.status === 'pending') { %>
+            <form method="post" action="/interviews/<%= i._id %>/approve" class="inline-form">
+              <input type="date" name="confirmedDate" placeholder="Date">
+              <input type="text" name="confirmedTime" placeholder="Time (e.g. 2:00 PM)">
+              <button type="submit" class="btn btn-sm">Approve</button>
+            </form>
+            <form method="post" action="/interviews/<%= i._id %>/decline" style="display:inline">
+              <button type="submit" class="btn btn-sm btn-danger">Decline</button>
+            </form>
+          <% } %>
+          <% if (i.status !== 'cancelled') { %>
+            <form method="post" action="/interviews/<%= i._id %>/cancel" style="display:inline; margin-top: 0.5rem;">
+              <button type="submit" class="btn-link danger">Cancel interview</button>
+            </form>
+          <% } %>
+        </article>
+      <% }); %>
+    </section>
+    <% if (!interviews.length) { %><p>No interviews yet.</p><% } %>
+  </main>
+</body>
+</html>
