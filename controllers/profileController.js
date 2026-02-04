@@ -3,7 +3,8 @@ const User = require('../models/User');
 exports.showEdit = async (req, res) => {
   const user = await User.findById(req.session.user.id).lean();
   if (!user) return res.redirect('/login');
-  res.render('profiles/edit', { profile: user });
+  const welcome = req.query.welcome === '1';
+  res.render('profiles/edit', { profile: user, welcome });
 };
 
 exports.update = async (req, res) => {
