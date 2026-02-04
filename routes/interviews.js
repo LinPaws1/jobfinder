@@ -4,7 +4,10 @@ const { requireAuth, requireRole } = require('../middleware/auth');
 const router = express.Router();
 
 router.use(requireAuth);
-router.get('/', interview.myInterviews);
+router.get('/', (req, res) => {
+  if (req.session.user.role === 'employer') return res.redirect('/jobs/my');
+  res.redirect('/jobs');
+});
 router.get('/request/:jobId', requireRole('jobseeker'), interview.showRequest);
 router.post('/request/:jobId', requireRole('jobseeker'), interview.request);
 router.post('/:id/approve', requireRole('employer'), interview.approve);

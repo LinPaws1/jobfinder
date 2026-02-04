@@ -9,7 +9,8 @@ const interviewSchema = new mongoose.Schema({
   message: { type: String, trim: true },
   status: { type: String, enum: ['pending', 'confirmed', 'cancelled'], default: 'pending' },
   confirmedDate: { type: Date },
-  confirmedTime: { type: String, trim: true }
+  confirmedTime: { type: String, trim: true },
+  confirmedLocation: { type: String, trim: true }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Interview', interviewSchema);
