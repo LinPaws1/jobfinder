@@ -1,23 +1,107 @@
 <%- include('../partials/head', { title: 'My Jobs' }) %>
+<% var _interviews = typeof interviews !== 'undefined' ? interviews : []; %>
 <body>
   <%- include('../partials/nav') %>
-  <main class="container">
-    <h1>My Jobs</h1>
-    <p><a href="/jobs/new" class="btn">Post a new job</a></p>
-    <section class="job-list">
-      <% jobs.forEach(function(job) { %>
-        <article class="card job-card">
-          <h2><%= job.title %></h2>
-          <p class="meta"><%= job.location || '—' %></p>
-          <p><%= job.description.substring(0, 120) %><%= job.description.length > 120 ? '…' : '' %></p>
-          <a href="/jobs/<%= job._id %>/edit" class="btn btn-sm">Edit</a>
-          <form action="/jobs/<%= job._id %>?_method=DELETE" method="post" style="display:inline">
-            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-          </form>
-        </article>
-      <% }); %>
-    </section>
-    <% if (!jobs.length) { %><p>You haven't posted any jobs yet. <a href="/jobs/new">Post your first job</a>.</p><% } %>
+  <main class="container container-dashboard">
+    <div class="page-header">
+      <h1>Dashboard</h1>
+      <p class="subtitle">Manage your job listings and interview requests in one place.</p>
+    </div>
+    <div class="dashboard-two-col">
+      <div class="dashboard-col dashboard-left">
+        <div class="dashboard-left-header">
+          <h2 class="section-title">My jobs</h2>
+          <a href="/jobs/new" class="btn">Post a new job</a>
+        </div>
+        <p class="result-count"><%= jobs.length %> job<%= jobs.length !== 1 ? 's' : '' %> posted</p>
+        <section class="job-list">
+          <% jobs.forEach(function(job) { %>
+            <article class="card job-card">
+              <div class="meta-row">
+                <span class="badge badge-type"><%= job.jobType || 'Full-time' %></span>
+                <% if (job.location) { %><span><%= job.location %></span><% } %>
+                <% if (job.createdAt) { %><span>Posted <%= new Date(job.createdAt).toLocaleDateString() %></span><% } %>
+              </div>
+              <h2><%= job.title %></h2>
+              <p class="snippet"><%= job.description.substring(0, 150) %><%= job.description.length > 150 ? '…' : '' %></p>
+              <div class="actions">
+                <a href="/jobs/<%= job._id %>" class="btn btn-sm btn-secondary">View</a>
+                <a href="/jobs/<%= job._id %>/edit" class="btn btn-sm">Edit</a>
+                <form action="/jobs/<%= job._id %>?_method=DELETE" method="post" style="display:inline">
+                  <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                </form>
+              </div>
+            </article>
+          <% }); %>
+        </section>
+        <% if (!jobs.length) { %>
+          <div class="empty-state">
+            <p class="empty-title">No jobs yet</p>
+            <p class="empty-text">Post your first job to start receiving interview requests from candidates.</p>
+            <a href="/jobs/new" class="btn">Post your first job</a>
+          </div>
+        <% } %>
+      </div>
+      <div class="dashboard-col dashboard-right">
+        <h2 class="section-title">Interviews</h2>
+        <p class="dashboard-col-subtitle">Review requests and see applicant profiles. Set date, time and location to approve.</p>
+        <p class="result-count"><%= _interviews.length %> interview<%= _interviews.length !== 1 ? 's' : '' %></p>
+        <section class="interview-list">
+          <% _interviews.forEach(function(i) { %>
+            <article class="card interview-card">
+              <div class="meta-row">
+                <span class="badge badge-<%= i.status %>"><%= i.status %></span>
+                <% if (i.createdAt) { %><span>Requested <%= new Date(i.createdAt).toLocaleDateString() %></span><% } %>
+              </div>
+              <h2><%= i.job && i.job.title ? i.job.title : 'Job' %></h2>
+              <div class="applicant-profile">
+                <h3 class="applicant-profile-title">Applicant profile</h3>
+                <p><strong>Name:</strong> <%= i.jobSeeker && (i.jobSeeker.fullName || '—') %></p>
+                <p><strong>Email:</strong> <a href="mailto:<%= i.jobSeeker && i.jobSeeker.email %>"><%= i.jobSeeker && i.jobSeeker.email %></a></p>
+                <% if (i.jobSeeker && i.jobSeeker.location) { %><p><strong>Location:</strong> <%= i.jobSeeker.location %></p><% } %>
+                <% if (i.jobSeeker && i.jobSeeker.skills) { %><p><strong>Skills:</strong> <%= i.jobSeeker.skills %></p><% } %>
+                <% if (i.jobSeeker && i.jobSeeker.experience) { %><p><strong>Experience:</strong></p><p class="experience-text"><%= i.jobSeeker.experience %></p><% } %>
+                <% if (!(i.jobSeeker && (i.jobSeeker.fullName || i.jobSeeker.location || i.jobSeeker.skills || i.jobSeeker.experience))) { %>
+                  <p class="hint">Applicant has not completed their profile yet.</p>
+                <% } %>
+              </div>
+              <% if (i.status === 'confirmed' && (i.confirmedDate || i.confirmedTime || i.confirmedLocation)) { %>
+                <div class="scheduled-details">
+                  <p><strong>Scheduled:</strong></p>
+                  <p><%= i.confirmedDate ? new Date(i.confirmedDate).toLocaleDateString() : '' %> at <%= i.confirmedTime || '' %></p>
+                  <% if (i.confirmedLocation) { %><p><strong>Location:</strong> <%= i.confirmedLocation %></p><% } %>
+                </div>
+              <% } %>
+              <% if (i.status === 'pending') { %>
+                <div class="approve-form-block">
+                  <form method="post" action="/interviews/<%= i._id %>/approve" class="approve-form">
+                    <label>Date <input type="date" name="confirmedDate" required></label>
+                    <label>Time <input type="time" name="confirmedTime" required step="900"></label>
+                    <label>Location (address) <input type="text" name="confirmedLocation" placeholder="e.g. 123 Main St, Melbourne" required></label>
+                    <button type="submit" class="btn btn-sm">Approve &amp; schedule</button>
+                  </form>
+                  <form method="post" action="/interviews/<%= i._id %>/decline" style="display:inline; margin-top: 0.5rem;">
+                    <button type="submit" class="btn btn-sm btn-danger">Decline</button>
+                  </form>
+                </div>
+              <% } %>
+              <% if (i.status !== 'cancelled') { %>
+                <form method="post" action="/interviews/<%= i._id %>/cancel" style="display:inline; margin-top: 0.5rem;">
+                  <button type="submit" class="btn-link danger">Cancel interview</button>
+                </form>
+              <% } %>
+            </article>
+          <% }); %>
+        </section>
+        <% if (!_interviews.length) { %>
+          <div class="empty-state">
+            <p class="empty-title">No interviews yet</p>
+            <p class="empty-text">When candidates request interviews for your jobs, they’ll appear here with their profile.</p>
+          </div>
+        <% } %>
+      </div>
+    </div>
   </main>
+  <%- include('../partials/footer') %>
 </body>
 </html>

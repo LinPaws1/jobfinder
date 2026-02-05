@@ -2,14 +2,19 @@
 <body>
   <%- include('../partials/nav') %>
   <main class="container">
-    <h1>Request interview: <%= job.title %></h1>
-    <p><strong>Company:</strong> <%= job.employer && (job.employer.companyName || job.employer.email) %></p>
+    <div class="page-header">
+      <h1>Request interview</h1>
+      <p class="subtitle">Request an interview for this role. The employer will set the date and time.</p>
+    </div>
+    <div class="card" style="margin-bottom: 1rem;">
+      <p><strong>Job:</strong> <%= job.title %></p>
+      <p><strong>Company:</strong> <%= job.employer && (job.employer.companyName || job.employer.email) %></p>
+      <% if (job.location || job.jobType) { %><p class="meta-row"><%= job.location || '' %> <%= job.jobType ? job.jobType : '' %></p><% } %>
+    </div>
     <form method="post" action="/interviews/request/<%= job._id %>" class="card form">
-      <label>Preferred date <input type="date" name="preferredDate"></label>
-      <label>Preferred time <input type="text" name="preferredTime" placeholder="e.g. 2:00 PM"></label>
-      <label>Message <textarea name="message" rows="3" placeholder="Brief intro or availability"></textarea></label>
-      <button type="submit" class="btn">Send request</button>
+      <button type="submit" class="btn">Request interview</button>
     </form>
   </main>
+  <%- include('../partials/footer') %>
 </body>
 </html>
