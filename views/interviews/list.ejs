@@ -2,33 +2,53 @@
 <body>
   <%- include('../partials/nav') %>
   <main class="container">
-    <h1>My interviews</h1>
+    <div class="page-header">
+      <h1>My interviews</h1>
+      <p class="subtitle"><% if (user.role === 'jobseeker') { %>Track your interview requests and confirmed times. Contact the employer via email to confirm details.<% } else { %>Review interview requests, approve or decline, and set confirmed times. Contact candidates via email.<% } %></p>
+    </div>
+    <% if (error === 'required_date_time_location') { %>
+      <p class="error">Please enter date, time and location (address) before approving. The applicant will see the scheduled details.</p>
+    <% } %>
+    <p class="result-count"><%= interviews.length %> interview<%= interviews.length !== 1 ? 's' : '' %></p>
     <section class="interview-list">
       <% interviews.forEach(function(i) { %>
         <article class="card interview-card">
+          <div class="meta-row">
+            <span class="badge badge-<%= i.status %>"><%= i.status %></span>
+            <% if (i.createdAt) { %><span>Requested <%= new Date(i.createdAt).toLocaleDateString() %></span><% } %>
+          </div>
           <h2><%= i.job && i.job.title ? i.job.title : 'Job' %></h2>
           <% if (user.role === 'jobseeker') { %>
             <p><strong>Employer:</strong> <%= i.employer && (i.employer.companyName || i.employer.email) %></p>
+            <p class="contact-info">Contact: <a href="mailto:<%= i.employer && i.employer.email %>"><%= i.employer && i.employer.email %></a></p>
           <% } else { %>
             <p><strong>Candidate:</strong> <%= i.jobSeeker && (i.jobSeeker.fullName || i.jobSeeker.email) %></p>
+            <p class="contact-info">Contact: <a href="mailto:<%= i.jobSeeker && i.jobSeeker.email %>"><%= i.jobSeeker && i.jobSeeker.email %></a></p>
           <% } %>
-          <p><strong>Status:</strong> <span class="status status-<%= i.status %>"><%= i.status %></span></p>
           <% if (i.preferredDate || i.preferredTime) { %>
-            <p>Preferred: <%= i.preferredDate ? new Date(i.preferredDate).toLocaleDateString() : '' %> <%= i.preferredTime || '' %></p>
+            <p><strong>Preferred:</strong> <%= i.preferredDate ? new Date(i.preferredDate).toLocaleDateString() : '' %> <%= i.preferredTime || '' %></p>
           <% } %>
-          <% if (i.confirmedDate || i.confirmedTime) { %>
-            <p>Confirmed: <%= i.confirmedDate ? new Date(i.confirmedDate).toLocaleDateString() : '' %> <%= i.confirmedTime || '' %></p>
+          <% if (i.status === 'confirmed' && (i.confirmedDate || i.confirmedTime || i.confirmedLocation)) { %>
+            <div class="scheduled-details">
+              <p><strong>Scheduled:</strong></p>
+              <p><%= i.confirmedDate ? new Date(i.confirmedDate).toLocaleDateString() : '' %> at <%= i.confirmedTime || '' %></p>
+              <% if (i.confirmedLocation) { %><p><strong>Location:</strong> <%= i.confirmedLocation %></p><% } %>
+            </div>
           <% } %>
-          <% if (i.message) { %><p><%= i.message %></p><% } %>
+          <% if (i.message) { %><p class="snippet"><strong>Message:</strong> <%= i.message %></p><% } %>
           <% if (user.role === 'employer' && i.status === 'pending') { %>
-            <form method="post" action="/interviews/<%= i._id %>/approve" class="inline-form">
-              <input type="date" name="confirmedDate" placeholder="Date">
-              <input type="text" name="confirmedTime" placeholder="Time (e.g. 2:00 PM)">
-              <button type="submit" class="btn btn-sm">Approve</button>
-            </form>
-            <form method="post" action="/interviews/<%= i._id %>/decline" style="display:inline">
-              <button type="submit" class="btn btn-sm btn-danger">Decline</button>
-            </form>
+            <div class="approve-form-block">
+              <p class="approve-hint">Set date, time and location to approve. The applicant will see these details.</p>
+              <form method="post" action="/interviews/<%= i._id %>/approve" class="approve-form">
+                <label>Date <input type="date" name="confirmedDate" required></label>
+                <label>Time <input type="time" name="confirmedTime" required step="900"></label>
+                <label>Location (address) <input type="text" name="confirmedLocation" placeholder="e.g. 123 Main St, Melbourne" required></label>
+                <button type="submit" class="btn btn-sm">Approve &amp; schedule</button>
+              </form>
+              <form method="post" action="/interviews/<%= i._id %>/decline" style="display:inline; margin-top: 0.5rem;">
+                <button type="submit" class="btn btn-sm btn-danger">Decline</button>
+              </form>
+            </div>
           <% } %>
           <% if (i.status !== 'cancelled') { %>
             <form method="post" action="/interviews/<%= i._id %>/cancel" style="display:inline; margin-top: 0.5rem;">
@@ -38,7 +58,14 @@
         </article>
       <% }); %>
     </section>
-    <% if (!interviews.length) { %><p>No interviews yet.</p><% } %>
+    <% if (!interviews.length) { %>
+      <div class="empty-state">
+        <p class="empty-title">No interviews yet</p>
+        <p class="empty-text"><% if (user.role === 'jobseeker') { %>Browse jobs and request an interview to see them here.<% } else { %>When candidates request interviews for your jobs, they’ll appear here.<% } %></p>
+        <% if (user.role === 'jobseeker') { %><a href="/jobs" class="btn">Browse jobs</a><% } else { %><a href="/jobs/my" class="btn">My jobs</a><% } %>
+      </div>
+    <% } %>
   </main>
+  <%- include('../partials/footer') %>
 </body>
 </html>
