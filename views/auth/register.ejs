@@ -1,21 +1,23 @@
-<%- include('../partials/head') %>
-<body>
+<%- include('../partials/head', { title: 'Register' }) %>
+<% var roleVal; try { roleVal = role; } catch(e) { roleVal = 'jobseeker'; } if (typeof roleVal === 'undefined') roleVal = 'jobseeker'; %>
+<body class="auth-body">
   <%- include('../partials/nav') %>
-  <main class="auth-page">
-    <h1>Register</h1>
-    <% if (error) { %><p class="error"><%= error %></p><% } %>
-    <form method="post" action="/register" class="card form">
-      <label>Email <input type="email" name="email" required></label>
-      <label>Password <input type="password" name="password" minlength="6" required></label>
-      <label>Account type
-        <select name="role" required>
-          <option value="jobseeker">Job Seeker</option>
-          <option value="employer">Employer</option>
-        </select>
-      </label>
-      <button type="submit" class="btn">Register</button>
-    </form>
-    <p><a href="/login">Already have an account? Log in</a></p>
+  <main class="auth-center">
+    <div class="auth-card">
+      <h1 class="auth-title">Create an account</h1>
+      <div class="auth-tabs">
+        <a href="/register?role=jobseeker" class="auth-tab <%= roleVal === 'jobseeker' ? 'active' : '' %>">Job Seeker</a>
+        <a href="/register?role=employer" class="auth-tab <%= roleVal === 'employer' ? 'active' : '' %>">Employer</a>
+      </div>
+      <% if (error) { %><p class="error"><%= error %></p><% } %>
+      <form method="post" action="/register" class="auth-form">
+        <label>Email <input type="email" name="email" placeholder="you@example.com" required></label>
+        <label>Password <input type="password" name="password" minlength="6" placeholder="At least 6 characters" required></label>
+        <input type="hidden" name="role" value="<%= roleVal %>">
+        <button type="submit" class="btn btn-full">Create account</button>
+      </form>
+      <p class="auth-switch">Already have an account? <a href="/login?as=<%= roleVal %>">Log in</a></p>
+    </div>
   </main>
 </body>
 </html>

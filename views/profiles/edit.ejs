@@ -2,19 +2,40 @@
 <body>
   <%- include('../partials/nav') %>
   <main class="container">
-    <h1>Edit profile</h1>
+    <div class="page-header">
+      <h1>Edit profile</h1>
+      <p class="subtitle">Your profile helps employers (or job seekers) understand who you are. Keep it up to date.</p>
+    </div>
+    <% if (typeof welcome !== 'undefined' && welcome) { %>
+      <div class="welcome-banner card">
+        <p class="welcome-title">Welcome to JobFinder!</p>
+        <p>Complete your profile so employers can see your name, location, skills and experience when you request interviews.</p>
+      </div>
+    <% } %>
     <form method="post" action="/profiles/edit?_method=PUT" class="card form">
       <% if (profile.role === 'jobseeker') { %>
-        <label>Full name <input type="text" name="fullName" value="<%= profile.fullName || '' %>"></label>
-        <label>Location <input type="text" name="location" value="<%= profile.location || '' %>"></label>
-        <label>Skills <input type="text" name="skills" value="<%= profile.skills || '' %>" placeholder="e.g. JavaScript, React"></label>
-        <label>Experience <textarea name="experience" rows="4"><%= profile.experience || '' %></textarea></label>
+        <div class="form-section">
+          <div class="form-section-title">Personal information</div>
+          <label>Full name <input type="text" name="fullName" value="<%= profile.fullName || '' %>" placeholder="Your full name"></label>
+          <label>Location <input type="text" name="location" value="<%= profile.location || '' %>" placeholder="City, state or country"></label>
+        </div>
+        <div class="form-section">
+          <div class="form-section-title">Background</div>
+          <label>Skills <input type="text" name="skills" value="<%= profile.skills || '' %>" placeholder="e.g. JavaScript, React, Project management"></label>
+          <p class="hint">List skills separated by commas so employers can find you.</p>
+          <label>Experience <textarea name="experience" rows="4" placeholder="Brief summary of your work history, education, or key achievements"><%= profile.experience || '' %></textarea></label>
+        </div>
       <% } else { %>
-        <label>Company name <input type="text" name="companyName" value="<%= profile.companyName || '' %>"></label>
-        <label>Company description <textarea name="companyDescription" rows="4"><%= profile.companyDescription || '' %></textarea></label>
+        <div class="form-section">
+          <div class="form-section-title">Company information</div>
+          <label>Company name <input type="text" name="companyName" value="<%= profile.companyName || '' %>" placeholder="Your company or organization name"></label>
+          <label>Company description <textarea name="companyDescription" rows="4" placeholder="What your company does, culture, and what you offer"><%= profile.companyDescription || '' %></textarea></label>
+          <p class="hint">This appears on your job listings so candidates can learn about you.</p>
+        </div>
       <% } %>
       <button type="submit" class="btn">Save profile</button>
     </form>
   </main>
+  <%- include('../partials/footer') %>
 </body>
 </html>
