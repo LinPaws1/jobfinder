@@ -3,22 +3,35 @@
   <%- include('../partials/nav') %>
   <main class="container">
     <article class="card job-detail">
+      <div class="meta-row">
+        <span class="badge badge-type"><%= job.jobType || 'Full-time' %></span>
+        <% if (job.location) { %><span><%= job.location %></span><% } %>
+        <% if (job.createdAt) { %><span>Posted <%= new Date(job.createdAt).toLocaleDateString() %></span><% } %>
+      </div>
       <h1><%= job.title %></h1>
-      <p class="meta"><%= job.location || '—' %> · <%= job.jobType %></p>
       <% if (job.employer) { %>
-        <p><strong>Company:</strong> <%= job.employer.companyName || job.employer.email %></p>
-        <% if (job.employer.companyDescription) { %><p><%= job.employer.companyDescription %></p><% } %>
+        <div class="company-block">
+          <p><strong>Company</strong> — <%= job.employer.companyName || job.employer.email %></p>
+          <% if (job.employer.companyDescription) { %>
+            <p class="section-body" style="margin-top: 0.5rem;"><%= job.employer.companyDescription %></p>
+          <% } %>
+        </div>
       <% } %>
-      <h2>Description</h2>
-      <p><%= job.description %></p>
+      <h2 class="section-title">Description</h2>
+      <p class="section-body"><%= job.description %></p>
       <% if (job.requirements) { %>
-        <h2>Requirements</h2>
-        <p><%= job.requirements %></p>
+        <h2 class="section-title">Requirements</h2>
+        <p class="section-body"><%= job.requirements %></p>
       <% } %>
       <% if (user && user.role === 'jobseeker') { %>
-        <a href="/interviews/request/<%= job._id %>" class="btn">Request interview</a>
+        <div class="cta-block">
+          <form method="post" action="/interviews/request/<%= job._id %>">
+            <button type="submit" class="btn">Request interview</button>
+          </form>
+        </div>
       <% } %>
     </article>
   </main>
+  <%- include('../partials/footer') %>
 </body>
 </html>

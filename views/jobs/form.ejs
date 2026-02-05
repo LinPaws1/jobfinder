@@ -2,22 +2,33 @@
 <body>
   <%- include('../partials/nav') %>
   <main class="container">
-    <h1><%= job ? 'Edit job' : 'Post a new job' %></h1>
+    <div class="page-header">
+      <h1><%= job ? 'Edit job' : 'Post a new job' %></h1>
+      <p class="subtitle"><%= job ? 'Update the details below. Changes are visible to job seekers immediately.' : 'Fill in the job details. You can edit or remove it anytime from My jobs.' %></p>
+    </div>
     <form method="post" action="<%= job ? '/jobs/' + job._id + '?_method=PUT' : '/jobs' %>" class="card form">
-      <label>Title <input type="text" name="title" value="<%= job ? job.title : '' %>" required></label>
-      <label>Description <textarea name="description" rows="5" required><%= job ? job.description : '' %></textarea></label>
-      <label>Requirements <textarea name="requirements" rows="3"><%= job ? job.requirements : '' %></textarea></label>
-      <label>Location <input type="text" name="location" value="<%= job ? job.location : '' %>"></label>
-      <label>Job type
-        <select name="jobType">
-          <option value="Full-time" <%= job && job.jobType === 'Full-time' ? 'selected' : '' %>>Full-time</option>
-          <option value="Part-time" <%= job && job.jobType === 'Part-time' ? 'selected' : '' %>>Part-time</option>
-          <option value="Contract" <%= job && job.jobType === 'Contract' ? 'selected' : '' %>>Contract</option>
-          <option value="Remote" <%= job && job.jobType === 'Remote' ? 'selected' : '' %>>Remote</option>
-        </select>
-      </label>
-      <button type="submit" class="btn"><%= job ? 'Update' : 'Create' %> job</button>
+      <div class="form-section">
+        <div class="form-section-title">Basic info</div>
+        <label>Job title <input type="text" name="title" value="<%= job ? job.title : '' %>" placeholder="e.g. Software Engineer" required></label>
+        <label>Location <input type="text" name="location" value="<%= job ? job.location : '' %>" placeholder="e.g. Melbourne, or Remote"></label>
+        <label>Job type
+          <select name="jobType">
+            <option value="Full-time" <%= job && job.jobType === 'Full-time' ? 'selected' : '' %>>Full-time</option>
+            <option value="Part-time" <%= job && job.jobType === 'Part-time' ? 'selected' : '' %>>Part-time</option>
+            <option value="Contract" <%= job && job.jobType === 'Contract' ? 'selected' : '' %>>Contract</option>
+            <option value="Remote" <%= job && job.jobType === 'Remote' ? 'selected' : '' %>>Remote</option>
+          </select>
+        </label>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Description & requirements</div>
+        <label>Description <textarea name="description" rows="5" placeholder="What the role involves, team, and day-to-day work" required><%= job ? job.description : '' %></textarea></label>
+        <label>Requirements <textarea name="requirements" rows="3" placeholder="Skills, experience, or qualifications needed"><%= job ? job.requirements : '' %></textarea></label>
+        <p class="hint">Be clear so candidates know if they’re a good fit.</p>
+      </div>
+      <button type="submit" class="btn"><%= job ? 'Update job' : 'Create job' %></button>
     </form>
   </main>
+  <%- include('../partials/footer') %>
 </body>
 </html>
