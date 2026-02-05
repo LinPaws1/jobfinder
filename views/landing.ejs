@@ -1,10 +1,35 @@
-<%- include('partials/head', { title: 'Home' }) %>
-<body>
-  <%- include('partials/nav') %>
-  <main class="auth-page">
-    <h1>JobFinder</h1>
-    <p class="tagline">Find opportunities. Book interviews. Get hired.</p>
-    <p><a href="/register" class="btn">Get started</a> &nbsp; <a href="/login">Log in</a></p>
+<%- include('partials/head', { title: 'Welcome' }) %>
+<body class="landing-body">
+  <main class="landing-split">
+    <a href="/login?as=jobseeker" class="landing-half landing-jobseeker">
+      <div class="landing-half-content">
+        <h2>Job Seeker</h2>
+        <p class="landing-half-tagline">Find opportunities &amp; book interviews</p>
+        <ul class="landing-half-steps">
+          <li>Create your profile</li>
+          <li>Browse jobs</li>
+          <li>Request an interview</li>
+          <li>Get confirmed</li>
+        </ul>
+        <span class="landing-half-cta">Log in as Job Seeker →</span>
+      </div>
+    </a>
+    <a href="/login?as=employer" class="landing-half landing-employer">
+      <div class="landing-half-content">
+        <h2>Employer</h2>
+        <p class="landing-half-tagline">Post jobs &amp; hire candidates</p>
+        <ul class="landing-half-steps">
+          <li>Add your company</li>
+          <li>Post a job</li>
+          <li>Review interview requests</li>
+          <li>Confirm the time</li>
+        </ul>
+        <span class="landing-half-cta">Log in as Employer →</span>
+      </div>
+    </a>
   </main>
+  <header class="landing-header">
+    <a href="/" class="landing-brand">JobFinder</a>
+  </header>
 </body>
 </html>

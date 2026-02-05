@@ -2,13 +2,8 @@
   <a href="/" class="brand">JobFinder</a>
   <div class="nav-links">
     <% if (user) { %>
-      <% if (user.role === 'jobseeker') { %>
-        <a href="/jobs">Jobs</a>
-      <% } else { %>
-        <a href="/jobs/my">My Jobs</a>
-        <a href="/jobs/new">Post Job</a>
-      <% } %>
-      <a href="/interviews">Interviews</a>
+      <span class="nav-user"><%= user.email %><% if (user.role === 'jobseeker') { %> (Job seeker)<% } else { %> (Employer)<% } %></span>
+      <a href="<%= user.role === 'jobseeker' ? '/jobs' : '/jobs/my' %>">Dashboard</a>
       <a href="/profiles/edit">Profile</a>
       <form action="/logout" method="post" style="display:inline">
         <button type="submit" class="btn-link">Log out</button>

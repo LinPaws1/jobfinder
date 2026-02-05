@@ -1,9 +1,13 @@
 <%- include('partials/head', { title: 'Not Found' }) %>
 <body>
   <%- include('partials/nav') %>
-  <main class="container auth-page">
-    <h1>Page not found</h1>
-    <p><a href="/">Go home</a></p>
+  <main class="container">
+    <div class="empty-state">
+      <p class="empty-title">Page not found</p>
+      <p class="empty-text">The page you’re looking for doesn’t exist or has been moved.</p>
+      <a href="/" class="btn">Go home</a>
+    </div>
   </main>
+  <%- include('partials/footer') %>
 </body>
 </html>
