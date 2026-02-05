@@ -1,24 +1,112 @@
 <%- include('../partials/head', { title: 'Browse Jobs' }) %>
+<% try { var _locations = locationsWithCount; } catch(e) { _locations = []; } _locations = typeof _locations !== 'undefined' ? _locations : []; %>
+<% try { var _jobTypes = jobTypesWithCount; } catch(e) { _jobTypes = []; } _jobTypes = typeof _jobTypes !== 'undefined' ? _jobTypes : []; %>
+<% try { var _titles = titlesWithCount; } catch(e) { _titles = []; } _titles = typeof _titles !== 'undefined' ? _titles : []; %>
+<% try { var _location = location; } catch(e) { _location = ''; } _location = typeof _location !== 'undefined' ? _location : ''; %>
+<% try { var _jobType = jobType; } catch(e) { _jobType = ''; } _jobType = typeof _jobType !== 'undefined' ? _jobType : ''; %>
+<% try { var _title = title; } catch(e) { _title = ''; } _title = typeof _title !== 'undefined' ? _title : ''; %>
 <body>
   <%- include('../partials/nav') %>
-  <main class="container">
-    <h1>Browse Jobs</h1>
-    <form method="get" class="search-form">
-      <input type="text" name="q" placeholder="Search by title or description" value="<%= q %>">
-      <input type="text" name="location" placeholder="Location" value="<%= location %>">
-      <button type="submit" class="btn">Search</button>
-    </form>
-    <section class="job-list">
-      <% jobs.forEach(function(job) { %>
-        <article class="card job-card">
-          <h2><a href="/jobs/<%= job._id %>"><%= job.title %></a></h2>
-          <p class="meta"><%= job.employer ? (job.employer.companyName || job.employer.email) : '—' %> · <%= job.location || '—' %></p>
-          <p><%= job.description.substring(0, 150) %><%= job.description.length > 150 ? '…' : '' %></p>
-          <a href="/jobs/<%= job._id %>" class="btn btn-sm">View &amp; request interview</a>
-        </article>
-      <% }); %>
-    </section>
-    <% if (!jobs.length) { %><p>No jobs found.</p><% } %>
+  <main class="container container-dashboard">
+    <div class="page-header">
+      <h1>Browse jobs</h1>
+      <p class="subtitle">Filter by job, location or job type, then open a job to view details and request an interview.</p>
+    </div>
+    <div class="dashboard-two-col">
+      <div class="dashboard-col dashboard-left">
+        <form method="get" class="search-form filter-form" id="jobs-filter-form">
+          <label class="filter-label">
+            Job
+            <select name="title" class="filter-select" onchange="this.form.submit()">
+              <option value="">All</option>
+              <% _titles.forEach(function(t) { %>
+                <option value="<%= t.value %>" <%= _title === t.value ? 'selected' : '' %>><%= t.value %> (<%= t.count %>)</option>
+              <% }); %>
+            </select>
+          </label>
+          <label class="filter-label">
+            Location
+            <select name="location" class="filter-select" onchange="this.form.submit()">
+              <option value="">All</option>
+              <% _locations.forEach(function(loc) { %>
+                <option value="<%= loc.value %>" <%= _location === loc.value ? 'selected' : '' %>><%= loc.value %> (<%= loc.count %>)</option>
+              <% }); %>
+            </select>
+          </label>
+          <label class="filter-label">
+            Job type
+            <select name="jobType" class="filter-select" onchange="this.form.submit()">
+              <option value="">All</option>
+              <% _jobTypes.forEach(function(t) { %>
+                <option value="<%= t.value %>" <%= _jobType === t.value ? 'selected' : '' %>><%= t.value %> (<%= t.count %>)</option>
+              <% }); %>
+            </select>
+          </label>
+        </form>
+        <p class="result-count"><%= jobs.length %> job<%= jobs.length !== 1 ? 's' : '' %> found</p>
+        <section class="job-list">
+          <% jobs.forEach(function(job) { %>
+            <article class="card job-card">
+              <div class="meta-row">
+                <span class="badge badge-type"><%= job.jobType || 'Full-time' %></span>
+                <% if (job.location) { %><span><%= job.location %></span><% } %>
+                <% if (job.createdAt) { %><span>Posted <%= new Date(job.createdAt).toLocaleDateString() %></span><% } %>
+              </div>
+              <h2><a href="/jobs/<%= job._id %>"><%= job.title %></a></h2>
+              <p class="meta-row"><strong><%= job.employer ? (job.employer.companyName || job.employer.email) : 'Company' %></strong></p>
+              <p class="snippet"><%= job.description.substring(0, 180) %><%= job.description.length > 180 ? '…' : '' %></p>
+              <div class="actions">
+                <a href="/jobs/<%= job._id %>" class="btn btn-sm">View details &amp; request interview</a>
+              </div>
+            </article>
+          <% }); %>
+        </section>
+        <% if (!jobs.length) { %>
+          <div class="empty-state">
+            <p class="empty-title">No jobs found</p>
+            <p class="empty-text">Try a different filter or check back later for new listings.</p>
+            <a href="/jobs" class="btn">Clear filters</a>
+          </div>
+        <% } %>
+      </div>
+      <div class="dashboard-col dashboard-right">
+        <h2 class="section-title">My interviews</h2>
+        <p class="dashboard-col-subtitle">Your interview requests and confirmed times.</p>
+        <p class="result-count"><%= (typeof interviews !== 'undefined' ? interviews : []).length %> interview<%= (typeof interviews !== 'undefined' ? interviews : []).length !== 1 ? 's' : '' %></p>
+        <section class="interview-list">
+          <% (typeof interviews !== 'undefined' ? interviews : []).forEach(function(i) { %>
+            <article class="card interview-card">
+              <div class="meta-row">
+                <span class="badge badge-<%= i.status %>"><%= i.status %></span>
+                <% if (i.createdAt) { %><span>Requested <%= new Date(i.createdAt).toLocaleDateString() %></span><% } %>
+              </div>
+              <h2><%= i.job && i.job.title ? i.job.title : 'Job' %></h2>
+              <p><strong>Employer:</strong> <%= i.employer && (i.employer.companyName || i.employer.email) %></p>
+              <p class="contact-info">Contact: <a href="mailto:<%= i.employer && i.employer.email %>"><%= i.employer && i.employer.email %></a></p>
+              <% if (i.status === 'confirmed' && (i.confirmedDate || i.confirmedTime || i.confirmedLocation)) { %>
+                <div class="scheduled-details">
+                  <p><strong>Scheduled:</strong></p>
+                  <p><%= i.confirmedDate ? new Date(i.confirmedDate).toLocaleDateString() : '' %> at <%= i.confirmedTime || '' %></p>
+                  <% if (i.confirmedLocation) { %><p><strong>Location:</strong> <%= i.confirmedLocation %></p><% } %>
+                </div>
+              <% } %>
+              <% if (i.status !== 'cancelled') { %>
+                <form method="post" action="/interviews/<%= i._id %>/cancel" style="display:inline; margin-top: 0.5rem;">
+                  <button type="submit" class="btn-link danger">Cancel interview</button>
+                </form>
+              <% } %>
+            </article>
+          <% }); %>
+        </section>
+        <% if (!(typeof interviews !== 'undefined' ? interviews : []).length) { %>
+          <div class="empty-state">
+            <p class="empty-title">No interviews yet</p>
+            <p class="empty-text">Browse jobs on the left and request an interview to see them here.</p>
+          </div>
+        <% } %>
+      </div>
+    </div>
   </main>
+  <%- include('../partials/footer') %>
 </body>
 </html>
